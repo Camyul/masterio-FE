@@ -44,7 +44,7 @@ export class RegisterComponent {
     console.log(this.registerForm.value);
 
     if (this.registerForm.valid) {
-      this.authService.login(this.registerForm.value).subscribe((data) => {
+      this.authService.register(this.registerForm.value).subscribe((data) => {
         console.log(data);
       });
     }

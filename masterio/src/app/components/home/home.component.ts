@@ -19,7 +19,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.authService
       .getCurrentUserId()
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((data) => {
+      .subscribe((data: { userId: string }) => {
         this.userId = data.userId;
       });
   }

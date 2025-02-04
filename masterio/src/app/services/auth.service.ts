@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../enviroments/enviroments';
+import { JwtTokenModel } from '../Models/JwtTokenModel';
 
 @Injectable({
   providedIn: 'root',
@@ -11,12 +12,13 @@ export class AuthService {
   private baseUrl = environment.apiUrl;
   constructor(private http: HttpClient) {}
 
-  login(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}identity/login`, data);
+  login(data: any): Observable<JwtTokenModel> {
+    return this.http.post<JwtTokenModel>(`${this.baseUrl}identity/login`, data);
   }
 
-  register(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}identity/register`, data);
+  register(data: any): Observable<void> {
+    console.log('Registered', data);
+    return this.http.post<void>(`${this.baseUrl}identity/register`, data);
   }
 
   saveToken(token: string): void {
@@ -32,7 +34,7 @@ export class AuthService {
   }
 
   // Just for test!
-  getCurrentUserId(): Observable<any> {
+  getCurrentUserId(): Observable<{ userId: string }> {
     let headers = new HttpHeaders();
     headers = headers.set('Authorization', `Bearer ${this.getToken()}`);
     return this.http.get<any>(`${this.baseUrl}home`, { headers });

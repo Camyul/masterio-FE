@@ -6,9 +6,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 
 import { AuthService } from '../../../services/auth.service';
+import { JwtTokenModel } from '../../../Models/JwtTokenModel';
 
 @Component({
   selector: 'msr-login',
@@ -30,7 +32,11 @@ export class LoginComponent implements OnDestroy {
     return this.loginForm.get('password');
   }
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required]],
@@ -42,9 +48,10 @@ export class LoginComponent implements OnDestroy {
       this.authService
         .login(this.loginForm.value)
         .pipe(takeUntil(this.unsubscribe$))
-        .subscribe((data) => {
+        .subscribe((data: JwtTokenModel) => {
           this.authService.saveToken(data.token);
           this.loginForm.reset();
+          this.router.navigate(['home']);
         });
     }
   }

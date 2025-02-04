@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -14,7 +14,7 @@ import { AuthService } from '../../services/auth.service';
 export class HomeComponent implements OnInit, OnDestroy {
   userId: string = '';
   private readonly unsubscribe$ = new Subject<void>();
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
   ngOnInit(): void {
     this.authService
       .getCurrentUserId()
@@ -26,5 +26,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['login']);
   }
 }

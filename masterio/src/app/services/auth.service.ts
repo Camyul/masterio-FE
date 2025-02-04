@@ -17,8 +17,11 @@ export class AuthService {
   }
 
   register(data: any): Observable<void> {
-    console.log('Registered', data);
     return this.http.post<void>(`${this.baseUrl}identity/register`, data);
+  }
+
+  logout(): void {
+    localStorage.removeItem('token');
   }
 
   saveToken(token: string): void {
@@ -35,8 +38,6 @@ export class AuthService {
 
   // Just for test!
   getCurrentUserId(): Observable<{ userId: string }> {
-    let headers = new HttpHeaders();
-    headers = headers.set('Authorization', `Bearer ${this.getToken()}`);
-    return this.http.get<any>(`${this.baseUrl}home`, { headers });
+    return this.http.get<any>(`${this.baseUrl}home`);
   }
 }

@@ -59,8 +59,7 @@ export class RegisterComponent implements OnDestroy {
       this.authService
         .register(this.registerForm.value)
         .pipe(takeUntil(this.unsubscribe$))
-        .subscribe((data) => {
-          console.log(data);
+        .subscribe(() => {
           this.router.navigate(['login']);
         });
     }

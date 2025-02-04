@@ -1,7 +1,9 @@
 <nav class="p-5">
-    <a routerLink="/login">Login</a>
+    <a *ngIf="!userId" routerLink="/login">Login</a>
     <br>
-    <a routerLink="/register">Register</a>
+    <a *ngIf="!userId" routerLink="/register">Register</a>
+    <br>
+    <a *ngIf="userId" routerLink="/home" (click)="logout()">Logout</a>
 </nav>
 
 <div class="d-flex card justify-content-center align-items-center container-fluid">

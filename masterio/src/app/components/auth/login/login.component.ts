@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
+
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
@@ -15,8 +17,10 @@ import { AuthService } from '../../../services/auth.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnDestroy {
   loginForm: FormGroup;
+
+  private readonly unsubscribe$ = new Subject<void>();
 
   get username() {
     return this.loginForm.get('username');
@@ -33,14 +37,20 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
-
   onSubmit() {
     if (this.loginForm.valid) {
-      this.authService.login(this.loginForm.value).subscribe((data) => {
-        this.authService.saveToken(data.token);
-        this.loginForm.reset();
-      });
+      this.authService
+        .login(this.loginForm.value)
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((data) => {
+          this.authService.saveToken(data.token);
+          this.loginForm.reset();
+        });
     }
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 }

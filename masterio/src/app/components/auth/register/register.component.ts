@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
+
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
@@ -15,8 +17,10 @@ import { AuthService } from '../../../services/auth.service';
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnDestroy {
   registerForm: FormGroup;
+
+  private readonly unsubscribe$ = new Subject<void>();
 
   get username() {
     return this.registerForm.get('username');
@@ -38,15 +42,21 @@ export class RegisterComponent {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
 
   onSubmit() {
     console.log(this.registerForm.value);
 
     if (this.registerForm.valid) {
-      this.authService.register(this.registerForm.value).subscribe((data) => {
-        console.log(data);
-      });
+      this.authService
+        .register(this.registerForm.value)
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((data) => {
+          console.log(data);
+        });
     }
   }
 }
